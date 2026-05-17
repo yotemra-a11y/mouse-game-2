@@ -13,12 +13,18 @@
       box-sizing: border-box;
     }
 
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
     body {
       background: #000;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      height: 100dvh;
       user-select: none;
       -webkit-user-select: none;
       touch-action: none;
@@ -31,6 +37,7 @@
       height: 874px;
       overflow: hidden;
       flex-shrink: 0;
+      transform-origin: center center;
     }
 
     /* ─── Background ─────────────────────────────────────── */
@@ -1601,6 +1608,17 @@
     });
 
     gameScreen.addEventListener('pointerdown', () => { closeMenu(); });
+
+    /* ── Responsive scaling ─────────────────────────────────── */
+    function scaleGame() {
+      const scale = Math.min(
+        window.innerWidth  / 402,
+        window.innerHeight / 874
+      );
+      gameScreen.style.transform = `scale(${scale})`;
+    }
+    window.addEventListener('resize', scaleGame);
+    scaleGame();
   </script>
 
 </body>
