@@ -13,31 +13,19 @@
       box-sizing: border-box;
     }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-
     body {
       background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100dvh;
+      overflow: hidden;
       user-select: none;
       -webkit-user-select: none;
       touch-action: none;
     }
 
-    /* iPhone frame: 402 × 874px */
     #game-screen {
       position: relative;
-      width: 402px;
-      height: 874px;
+      width: 100vw;
+      height: 100dvh;
       overflow: hidden;
-      flex-shrink: 0;
-      transform-origin: center center;
     }
 
     /* ─── Background ─────────────────────────────────────── */
@@ -103,14 +91,15 @@
     #lvl-label { top: 68px; left: 42px; }
     #lvl-value { top: 68px; left: 74px; }
 
-    #cps-box   { top: 61px; left: 302px; }
-    #cps-label { top: 68px; left: 307px; }
-    #cps-value { top: 70px; left: 339px; }
+    #cps-box   { top: 61px; right: 37px; left: auto; }
+    #cps-label { top: 68px; right: 63px; left: auto; }
+    #cps-value { top: 70px; right: 37px; left: auto; }
 
     /* ─── Score Bar ────────────────────────────────────────── */
     .score-bar {
       position: absolute;
-      left: 43px;
+      left: 50%;
+      transform: translateX(-50%);
       top: 90px;
       width: 316px;
     }
@@ -140,8 +129,10 @@
     #game-screen-img {
       position: absolute;
       top: 159px;
-      left: 10px;
-      width: 383px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 20px);
+      max-width: 383px;
       height: 336px;
       object-fit: cover;
     }
@@ -149,8 +140,9 @@
     /* ─── Mouse ────────────────────────────────────────────── */
     #mouse {
       position: absolute;
-      left: 122px;
-      top: 564px;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 20px;
       width: 159px;
       height: 229px;
       transition: transform 80ms ease-out;
@@ -158,7 +150,7 @@
     }
 
     #mouse.pressed {
-      transform: translateY(-10px);
+      transform: translateX(-50%) translateY(-10px);
     }
 
     /* ─── Menu panel ───────────────────────────────────────── */
@@ -245,8 +237,9 @@
     #warning-notice {
       position: absolute;
       width: 162px;
-      left:  calc(10px + (383px - 162px) / 2);
-      top:   calc(159px + (336px - 118px) / 2);
+      left: 50%;
+      transform: translateX(-50%);
+      top: calc(159px + (336px - 118px) / 2);
 
       background: #c0c0c0;
       border: 2px solid;
@@ -1175,7 +1168,7 @@
     function showAd() {
       if (adOpen || isGameOver) return;
       adImg.src = AD_IMAGES[Math.floor(Math.random() * AD_IMAGES.length)];
-      const x = 10  + Math.random() * (402 - 162 - 20);
+      const x = 10  + Math.random() * (window.innerWidth - 162 - 20);
       const y = 130 + Math.random() * (430 - 130);
       adPopup.style.left = x.toFixed(0) + 'px';
       adPopup.style.top  = y.toFixed(0) + 'px';
@@ -1238,7 +1231,7 @@
 
     function showVirus() {
       if (virusOpen || isGameOver) return;
-      const x = 10 + Math.random() * (402 - 162 - 20);
+      const x = 10 + Math.random() * (window.innerWidth - 162 - 20);
       const y = 130 + Math.random() * (430 - 130);
       virusPopup.style.left = x.toFixed(0) + 'px';
       virusPopup.style.top  = y.toFixed(0) + 'px';
@@ -1372,8 +1365,8 @@
       const el = document.createElement('div');
       el.className = 'plus-one';
       el.textContent = '+1';
-      el.style.left = (122 + 159 / 2 - 18 + (Math.random() - 0.5) * 30) + 'px';
-      el.style.top  = (564 + 60) + 'px';
+      el.style.left = (window.innerWidth / 2 - 18 + (Math.random() - 0.5) * 30) + 'px';
+      el.style.top  = (window.innerHeight - 249 + 60) + 'px';
       gameScreen.appendChild(el);
       el.addEventListener('animationend', () => el.remove());
     }
@@ -1609,13 +1602,6 @@
 
     gameScreen.addEventListener('pointerdown', () => { closeMenu(); });
 
-    /* ── Responsive scaling ─────────────────────────────────── */
-    function scaleGame() {
-      const scale = window.innerWidth / 402;
-      gameScreen.style.transform = `scale(${scale})`;
-    }
-    window.addEventListener('resize', scaleGame);
-    scaleGame();
   </script>
 
 </body>
