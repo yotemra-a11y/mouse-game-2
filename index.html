@@ -43,6 +43,57 @@
       transform-origin: top center;
     }
 
+    /* ─── Desktop phone frame ─────────────────────────────── */
+    @media (pointer: fine) {
+      body {
+        background: #111;
+      }
+
+      #game-screen {
+        border-radius: 44px;
+        box-shadow:
+          0 0 0 12px #1c1c1e,
+          0 0 0 13px #3a3a3c,
+          0 0 0 15px #0a0a0a,
+          0 50px 120px rgba(0, 0, 0, 0.9);
+      }
+
+      /* Speaker grille */
+      #game-screen::before {
+        content: '';
+        position: absolute;
+        top: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 56px;
+        height: 6px;
+        background: #2c2c2e;
+        border-radius: 3px;
+        z-index: 999;
+        pointer-events: none;
+      }
+
+      /* Home indicator bar */
+      #game-screen::after {
+        content: '';
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 130px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+        z-index: 999;
+        pointer-events: none;
+      }
+
+      /* Shift menu away from rounded corner */
+      #menu-panel {
+        left: 35px !important;
+      }
+    }
+
     /* ─── Background ─────────────────────────────────────── */
     #game-bg {
       position: absolute;
@@ -188,7 +239,7 @@
       left: 6px;
       top: 4px;
       font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 8px;
+      font-size: 10px;
       font-weight: normal;
       color: #000;
       white-space: nowrap;
@@ -203,8 +254,8 @@
     #menu-sep {
       position: absolute;
       left: 6px;
-      top: 14px;
-      width: 31px;
+      top: 16px;
+      width: 44px;
       height: 2px;
       background: #000;
     }
@@ -910,9 +961,7 @@
     <div id="menu-panel">
       <p id="menu-label">MENU</p>
       <div id="menu-sep"></div>
-      <div id="menu-arrow-store" class="menu-arrow"></div>
       <p class="menu-item-label" id="menu-store-label">store</p>
-      <div id="menu-arrow-help" class="menu-arrow"></div>
       <p class="menu-item-label" id="menu-help-label">help</p>
     </div>
 
