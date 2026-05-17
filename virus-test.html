@@ -2,484 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <title>CVLAUD GAME</title>
+  <title>Virus Block Test</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: #111;
       min-height: 100vh;
-      overflow: hidden;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: none;
-    }
-
-    /* Mobile: align game to top so scale(width/402) fills edge-to-edge */
-    @media (pointer: coarse) {
-      body {
-        align-items: flex-start;
-        height: 100dvh;
-        min-height: unset;
-      }
-    }
-
-    #game-screen {
-      position: relative;
-      width: 402px;
-      height: 874px;
-      overflow: hidden;
-      flex-shrink: 0;
-      transform-origin: top center;
-    }
-
-    /* ─── Background ─────────────────────────────────────── */
-    #game-bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* ─── Clicks Counter ───────────────────────────────────── */
-    .clicks-counter {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      top: 36px;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .clicks-counter__bar {
-      width: 16px;
-      height: 6px;
-      border: 1.5px solid #fdd94b;
-      background: #060606;
-      flex-shrink: 0;
-    }
-
-    .clicks-counter__number {
-      font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 30px;
-      font-weight: normal;
-      line-height: normal;
-      letter-spacing: 0.08em;
-      color: black;
-      -webkit-text-stroke: 2px #fdd94b;
-      white-space: nowrap;
-    }
-
-    /* ─── LVL & CPS status boxes ──────────────────────────── */
-    .status-box {
-      position: absolute;
-      width: 63px;
-      height: 21px;
-      background: black;
-    }
-
-    .status-label,
-    .status-value {
-      position: absolute;
-      font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 8px;
-      font-weight: normal;
-      color: #fdd94b;
-      letter-spacing: 0;
-      line-height: normal;
-      white-space: nowrap;
-    }
-
-    #lvl-box   { top: 61px; left: 37px; }
-    #lvl-label { top: 68px; left: 42px; }
-    #lvl-value { top: 68px; left: 74px; }
-
-    #cps-box   { top: 61px; left: 302px; }
-    #cps-label { top: 68px; left: 307px; }
-    #cps-value { top: 70px; left: 339px; }
-
-    /* ─── Score Bar ────────────────────────────────────────── */
-    .score-bar {
-      position: absolute;
-      left: 43px;
-      top: 90px;
-      width: 316px;
-    }
-
-    .score-bar__bg {
-      width: 100%;
-      display: block;
-    }
-
-    .score-bar__fill {
-      position: absolute;
-      left:   2.52%;
-      top:    28.4%;
-      width:  94.97%;
-      height: 43.2%;
-      clip-path: inset(0 var(--clip-right, 100%) 0 0);
-      transition: clip-path 60ms linear;
-    }
-
-    .score-bar__fill img {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    /* ─── Game Screen image ────────────────────────────────── */
-    #game-screen-img {
-      position: absolute;
-      top: 159px;
-      left: 10px;
-      width: 383px;
-      height: 336px;
-      object-fit: cover;
-    }
-
-    /* ─── Mouse ────────────────────────────────────────────── */
-    #mouse {
-      position: absolute;
-      left: 122px;
-      top: 564px;
-      width: 159px;
-      height: 229px;
-      transition: transform 80ms ease-out;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    #mouse.pressed {
-      transform: translateY(-10px);
-    }
-
-    /* ─── Menu panel ───────────────────────────────────────── */
-    #menu-panel {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100px;
-      height: 20px;
-      background: transparent;
-      z-index: 350;
-      overflow: hidden;
-      cursor: pointer;
-    }
-
-    #menu-panel.open {
-      height: 78px;
-      background: #000;
-    }
-
-    #menu-label {
-      position: absolute;
-      left: 6px;
-      top: 4px;
-      font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 8px;
-      font-weight: normal;
-      color: #000;
-      white-space: nowrap;
-      letter-spacing: 0;
-      line-height: normal;
-    }
-
-    #menu-panel.open #menu-label {
-      color: #fdd94b;
-    }
-
-    #menu-sep {
-      position: absolute;
-      left: 6px;
-      top: 14px;
-      width: 31px;
-      height: 2px;
-      background: #000;
-    }
-
-    #menu-panel.open #menu-sep {
-      background: #fdd94b;
-    }
-
-    .menu-arrow {
-      position: absolute;
-      width: 0;
-      height: 0;
-      border-top: 2px solid transparent;
-      border-bottom: 2px solid transparent;
-      border-left: 4px solid #ff5959;
-    }
-
-    #menu-arrow-store { left: 8px;  top: 30px; }
-    #menu-arrow-help  { left: 6px;  top: 58px; }
-
-    .menu-item-label {
-      position: absolute;
-      font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 14px;
-      font-weight: normal;
-      color: #fdd94b;
-      white-space: nowrap;
-      cursor: pointer;
-    }
-
-    #menu-store-label { left: 11px; top: 24px; }
-    #menu-help-label  { left: 12px; top: 55px; }
-
-    /* ─── Windows 95 Error Dialog ─────────────────────────────
-       Strictly contained within Screen.png bounds:
-       top:159, left:10, w:383, h:336
-    ─────────────────────────────────────────────────────────── */
-    #warning-notice {
-      position: absolute;
-      width: 162px;
-      left:  calc(10px + (383px - 162px) / 2);
-      top:   calc(159px + (336px - 118px) / 2);
-
-      background: #c0c0c0;
-      border: 2px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
-      box-shadow: 1px 1px 0 #000;
-
-      font-family: 'Press Start 2P', Helvetica, monospace;
-      display: none;
-      z-index: 50;
-      cursor: pointer;
-    }
-
-    #warning-notice.active { display: block; }
-
-    /* Title bar */
-    .w95-titlebar {
-      background: linear-gradient(to right, #000080, #1084d0);
-      padding: 3px 4px 3px 6px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 4px;
-    }
-
-    .w95-title-text {
-      font-size: 7px;
-      color: #fff;
-      white-space: nowrap;
-      flex: 1;
-    }
-
-    .w95-close {
-      width: 16px;
-      height: 14px;
-      background: #c0c0c0;
-      border: 2px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
-      font-family: Arial, sans-serif;
-      font-size: 10px;
-      font-weight: bold;
-      color: #000;
-      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0;
-      line-height: 1;
-      flex-shrink: 0;
+      font-family: 'Press Start 2P', monospace;
     }
 
-    /* Body */
-    .w95-body {
-      padding: 10px 10px 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
+    /* ─── Glitch text animation ─────────────────────────────── */
+    @keyframes glitch-1 {
+      0%, 89%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+      90%            { clip-path: inset(10% 0 60% 0); transform: translate(-3px, 0); }
+      92%            { clip-path: inset(55% 0 20% 0); transform: translate(3px, 0); }
+      94%            { clip-path: inset(80% 0 5%  0); transform: translate(-2px, 0); }
+      96%            { clip-path: inset(30% 0 40% 0); transform: translate(2px, 0); }
     }
 
-    .w95-message {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    @keyframes glitch-2 {
+      0%, 91%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+      92%            { clip-path: inset(5%  0 70% 0); transform: translate(3px, 0); }
+      94%            { clip-path: inset(60% 0 15% 0); transform: translate(-3px, 0); }
+      96%            { clip-path: inset(40% 0 45% 0); transform: translate(2px, 0); }
     }
 
-    /* Red circle X icon */
-    .w95-x-icon {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: #cc0000;
-      border: 2px solid #880000;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      line-height: 1;
-    }
-
-    .w95-error-text {
-      font-size: 9px;
-      color: #000;
-      letter-spacing: 0.05em;
-    }
-
-    /* Timer bar */
-    .w95-timer-bar-bg {
-      width: 100%;
-      height: 7px;
-      background: #808080;
-      border: 1px solid;
-      border-color: #808080 #ffffff #ffffff #808080;
-    }
-
-    #warning-timer-bar {
-      height: 100%;
-      background: #cc0000;
-      width: 100%;
-    }
-
-    /* OK button — no click animation */
-    .w95-ok {
-      background: #c0c0c0;
-      border: 2px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
-      padding: 3px 16px;
-      font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 7px;
-      color: #000;
-      cursor: pointer;
-    }
-
-    /* ─── +1 float animation ───────────────────────────────── */
-    @keyframes float-up {
-      0%   { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-90px); }
-    }
-
-    .plus-one {
-      position: absolute;
-      font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 22px;
-      color: #fdd94b;
-      -webkit-text-stroke: 1.5px #000;
-      pointer-events: none;
-      animation: float-up 0.75s ease-out forwards;
-    }
-
-    /* ─── Background tint (changes each level) ────────────── */
-    #bg-tint {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      transition: background 0.6s ease;
-    }
-
-    /* ─── Level-up flash ───────────────────────────────────── */
-    @keyframes lvl-flash {
-      0%   { opacity: 0.55; }
-      100% { opacity: 0; }
-    }
-
-    #level-up-flash {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: #fdd94b;
-      opacity: 0;
-    }
-
-    #level-up-flash.flash {
-      animation: lvl-flash 0.4s ease-out forwards;
-    }
-
-    /* ─── Game Over Overlay ────────────────────────────────── */
-    #game-over-overlay {
-      display: none;
-      position: absolute;
-      inset: 0;
-      z-index: 200;
-      background: rgba(0, 0, 0, 0.75);
-      justify-content: center;
-      align-items: center;
-    }
-
-    #game-over-overlay.active {
-      display: flex;
-    }
-
-    /* Card wraps the image and all overlaid elements */
-    #game-over-card {
-      position: relative;
-      width: 100%;
-    }
-
-    #game-over-img {
-      width: 100%;
-      display: block;
-    }
-
-    /* LVL and CPS stats displayed over the game over image */
-    .go-stat {
-      position: absolute;
-      font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 10px;
-      font-weight: normal;
-      color: #fdd94b;
-      white-space: nowrap;
-      letter-spacing: 0;
-    }
-
-    #go-lvl-stat { top: 55%; left: 25%; }
-    #go-cps-stat { top: 55%; right: 25%; transform: translateX(50%); }
-
-    /* ─── 90s Pop-up Ad ────────────────────────────────────── */
-    #ad-popup {
-      position: absolute;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      z-index: 60;
-      cursor: pointer;
-    }
-
-    #ad-popup.active { display: flex; }
-
-    #ad-img {
-      width: 162px;
-      height: auto;
-      image-rendering: pixelated;
-      display: block;
-    }
-
-    @keyframes ad-blink {
-      0%, 49% { opacity: 1; }
-      50%, 100% { opacity: 0; }
-    }
-
-    .ad-label {
-      font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 12px;
-      color: #ff0000;
-      -webkit-text-stroke: 1px #000;
-      animation: ad-blink 0.5s step-end infinite;
-      white-space: nowrap;
-    }
-
-    /* ─── Virus popup ───────────────────────────────────────── */
     @keyframes flicker {
       0%, 97%, 100% { opacity: 1; }
       98%            { opacity: 0.4; }
@@ -487,52 +41,50 @@
       99.5%          { opacity: 0.2; }
     }
 
+    @keyframes scanline {
+      0%   { background-position: 0 0; }
+      100% { background-position: 0 100px; }
+    }
+
     @keyframes skull-pulse {
       0%, 100% { transform: scale(1);   color: #cc0000; }
       50%       { transform: scale(1.1); color: #ff2200; }
     }
 
-    @keyframes glitch-1 {
-      0%, 89%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
-      90%            { clip-path: inset(10% 0 60% 0); transform: translate(-3px, 0); }
-      92%            { clip-path: inset(55% 0 20% 0); transform: translate(3px,  0); }
-      94%            { clip-path: inset(80% 0 5%  0); transform: translate(-2px, 0); }
+    @keyframes bar-fill {
+      0%   { width: 100%; }
+      100% { width: 0%; }
     }
 
-    @keyframes glitch-2 {
-      0%, 91%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
-      92%            { clip-path: inset(5%  0 70% 0); transform: translate(3px,  0); }
-      94%            { clip-path: inset(60% 0 15% 0); transform: translate(-3px, 0); }
-    }
-
+    /* ─── Virus popup ───────────────────────────────────────── */
     #virus-popup {
-      position: absolute;
+      position: relative;
       width: 162px;
-      display: none;
-      z-index: 65;
-      cursor: pointer;
       background: #0a0a0a;
       border: 2px solid #cc0000;
       box-shadow: 0 0 8px #cc0000, 0 0 2px #cc0000 inset;
+      cursor: pointer;
       animation: flicker 4s infinite;
       overflow: hidden;
     }
 
+    /* Scanline overlay */
     #virus-popup::after {
       content: '';
       position: absolute;
       inset: 0;
       background: repeating-linear-gradient(
         to bottom,
-        transparent 0px, transparent 3px,
-        rgba(0,0,0,0.25) 3px, rgba(0,0,0,0.25) 4px
+        transparent 0px,
+        transparent 3px,
+        rgba(0, 0, 0, 0.25) 3px,
+        rgba(0, 0, 0, 0.25) 4px
       );
       pointer-events: none;
       z-index: 10;
     }
 
-    #virus-popup.active { display: block; }
-
+    /* ─── Title bar ─────────────────────────────────────────── */
     .virus-titlebar {
       background: #cc0000;
       padding: 4px 6px;
@@ -542,7 +94,6 @@
     }
 
     .virus-title-text {
-      font-family: 'Press Start 2P', Helvetica, monospace;
       font-size: 6px;
       color: #fff;
       letter-spacing: 0.05em;
@@ -555,23 +106,25 @@
       color: #fff;
     }
 
+    /* ─── Body ──────────────────────────────────────────────── */
     .virus-body {
-      padding: 10px 8px;
+      padding: 10px 8px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
     }
 
+    /* Skull */
     .virus-skull {
       font-size: 28px;
       line-height: 1;
       animation: skull-pulse 0.8s ease-in-out infinite;
     }
 
+    /* Glitch text block */
     .virus-text-wrap {
       position: relative;
-      font-family: 'Press Start 2P', Helvetica, monospace;
       font-size: 7px;
       color: #00ff41;
       text-align: center;
@@ -587,9 +140,17 @@
       text-align: center;
     }
 
-    .virus-text-wrap::before { color: #ff0044; animation: glitch-1 3s infinite; }
-    .virus-text-wrap::after  { color: #00eeff; animation: glitch-2 3s infinite; }
+    .virus-text-wrap::before {
+      color: #ff0044;
+      animation: glitch-1 3s infinite;
+    }
 
+    .virus-text-wrap::after {
+      color: #00eeff;
+      animation: glitch-2 3s infinite;
+    }
+
+    /* Infection bar */
     .virus-bar-bg {
       width: 100%;
       height: 6px;
@@ -597,1029 +158,42 @@
       border: 1px solid #cc0000;
     }
 
-    #virus-timer-bar {
+    .virus-bar-fill {
       height: 100%;
       background: #cc0000;
       box-shadow: 0 0 4px #ff0000;
       width: 100%;
     }
 
+    /* OK button */
     .virus-btn {
       background: #1a0000;
       border: 1px solid #cc0000;
       padding: 4px 14px;
-      font-family: 'Press Start 2P', Helvetica, monospace;
+      font-family: 'Press Start 2P', monospace;
       font-size: 6px;
       color: #cc0000;
       cursor: pointer;
       letter-spacing: 0.05em;
     }
-
-    /* ─── Spree pop (float animation on ad click) ─────────── */
-    @keyframes spree-pop {
-      0%   { opacity: 1; transform: translateX(-50%) scale(1.4); }
-      80%  { opacity: 1; transform: translateX(-50%) scale(1); }
-      100% { opacity: 0; transform: translateX(-50%) scale(1); }
-    }
-
-    #spree-label {
-      position: absolute;
-      left: 50%;
-      top: 300px;
-      transform: translateX(-50%);
-      font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 38px;
-      color: #000;
-      -webkit-text-stroke: 3px #fff;
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      z-index: 70;
-    }
-
-    #spree-label.pop {
-      animation: spree-pop 1.2s ease-out forwards;
-    }
-
-    /* ─── Persistent spree badge (below score bar) ─────────── */
-    @keyframes spree-badge-blink {
-      0%, 49% { opacity: 1; }
-      50%, 100% { opacity: 0.4; }
-    }
-
-    #spree-badge {
-      position: absolute;
-      left: 50%;
-      top: 122px;
-      transform: translateX(-50%);
-      font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 14px;
-      color: #000;
-      white-space: nowrap;
-      pointer-events: none;
-      display: none;
-      z-index: 70;
-      animation: spree-badge-blink 0.8s step-end infinite;
-    }
-
-    #spree-badge.active { display: block; }
-
-    /* ─── Store screen ──────────────────────────────────────── */
-    #store-screen {
-      position: absolute;
-      inset: 0;
-      display: none;
-      z-index: 300;
-    }
-
-    #store-screen.active { display: block; }
-
-    #store-bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      pointer-events: none;
-    }
-
-    /* "skins" title — mirrors click-counter layout */
-    #store-title-wrap {
-      position: absolute;
-      left: 96px;
-      top: 36px;
-      width: 215px;
-      height: 42px;
-    }
-
-    #store-title-bar-l,
-    #store-title-bar-r {
-      position: absolute;
-      top: 12px;
-      width: 16px;
-      height: 6px;
-      border: 1.5px solid #fdd94b;
-      background: #060606;
-    }
-
-    #store-title-bar-l { left: 0; }
-    #store-title-bar-r { left: 196px; }
-
-    #store-title-text {
-      position: absolute;
-      left: 26px;
-      top: 0;
-      font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 30px;
-      font-weight: normal;
-      color: #000;
-      letter-spacing: 0.08em;
-      white-space: nowrap;
-      -webkit-text-stroke: 2px #fdd94b;
-    }
-
-    /* Category tabs */
-    .store-tab {
-      position: absolute;
-      height: 21px;
-      background: #000;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 8px;
-      color: #fdd94b;
-      white-space: nowrap;
-    }
-
-    #store-tab-mice        { left: 66px;  width: 63px;  top: 124px; }
-    #store-tab-monitors    { left: 135px; width: 88px;  top: 124px; }
-    #store-tab-backgrounds { left: 229px; width: 107px; top: 124px; }
-
-    .store-tab.active-tab {
-      border-bottom: 2px solid #fdd94b;
-    }
-
-    /* Content area */
-    #store-content {
-      position: absolute;
-      left: 10px;
-      top: 160px;
-      width: 382px;
-      bottom: 20px;
-      overflow-y: auto;
-    }
-
-    #store-content img {
-      width: 100%;
-      height: auto;
-      display: block;
-      image-rendering: pixelated;
-    }
-
-    /* ─── Tutorial ─────────────────────────────────────────── */
-
-    /* First-launch prompt */
-    #tutorial-prompt-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 600;
-    }
-    #tutorial-prompt-overlay.active { display: flex; }
-
-    .tut-prompt-box {
-      background: #000;
-      border: 2px solid #fdd94b;
-      padding: 22px 18px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      width: 270px;
-    }
-
-    .tut-prompt-title {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 13px;
-      color: #fdd94b;
-    }
-
-    .tut-prompt-q {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 8px;
-      color: #fff;
-      line-height: 1.9;
-    }
-
-    .tut-prompt-btns { display: flex; gap: 16px; }
-
-    .tut-btn {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 8px;
-      padding: 9px 20px;
-      cursor: pointer;
-      border: none;
-    }
-
-    #tut-yes { background: #fdd94b; color: #000; }
-    #tut-no  { background: #333;    color: #fff; }
-
-    /* Tutorial overlay — pointer-events:none so only buttons inside are clickable */
-    #tutorial-overlay {
-      position: absolute;
-      inset: 0;
-      display: none;
-      z-index: 500;
-      pointer-events: none;
-    }
-    #tutorial-overlay.active { display: block; }
-
-    /* Spotlight: transparent rect, huge box-shadow = dark surround */
-    #tutorial-spotlight {
-      position: absolute;
-      box-shadow: 0 0 0 9999px rgba(0,0,0,0.80);
-      border-radius: 6px;
-      z-index: 501;
-      pointer-events: none;
-      transition: left 0.25s ease, top 0.25s ease,
-                  width 0.25s ease, height 0.25s ease;
-    }
-
-    /* Instruction box with prev/next arrows */
-    #tutorial-instruction {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 503;
-      background: #000;
-      border: 2px solid #fdd94b;
-      display: flex;
-      align-items: stretch;
-      pointer-events: all;
-      white-space: nowrap;
-    }
-
-    #tut-text {
-      padding: 10px 12px;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 7px;
-      color: #fdd94b;
-      line-height: 1.9;
-      text-align: center;
-    }
-
-    .tut-nav-btn {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 11px;
-      color: #000;
-      background: #fdd94b;
-      border: none;
-      padding: 0 12px;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .tut-nav-btn:disabled {
-      background: #333;
-      color: #555;
-      cursor: default;
-    }
-
-    /* Disable flicker/glitch animations on virus during tutorial demo */
-    .tut-demo-show {
-      animation: none !important;
-      opacity: 1   !important;
-    }
-    .tut-demo-show * {
-      animation: none !important;
-    }
-
-    /* Transparent button overlaid where RESTART sits in the image */
-    #restart-btn {
-      position: absolute;
-      bottom: 12%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 55%;
-      height: 14%;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
   </style>
 </head>
 <body>
 
-  <div id="game-screen">
-
-    <!-- Background -->
-    <img id="game-bg" src="elements/background.png" alt="" draggable="false">
-
-    <div id="bg-tint"></div>
-    <div id="level-up-flash"></div>
-
-    <!-- MENU panel -->
-    <div id="menu-panel">
-      <p id="menu-label">MENU</p>
-      <div id="menu-sep"></div>
-      <div id="menu-arrow-store" class="menu-arrow"></div>
-      <p class="menu-item-label" id="menu-store-label">store</p>
-      <div id="menu-arrow-help" class="menu-arrow"></div>
-      <p class="menu-item-label" id="menu-help-label">help</p>
+  <div id="virus-popup">
+    <div class="virus-titlebar">
+      <span class="virus-title-text">⚠ VIRUS.EXE</span>
+      <span class="virus-x">✕</span>
     </div>
-
-    <!-- Game Screen image -->
-    <img id="game-screen-img" src="elements/SCREEN.png" alt="" draggable="false">
-
-    <!-- Clicks Counter -->
-    <div class="clicks-counter" role="status" aria-label="Clicks counter" aria-live="polite">
-      <div class="clicks-counter__bar" aria-hidden="true"></div>
-      <div class="clicks-counter__number" id="clickCount" aria-atomic="true">0</div>
-      <div class="clicks-counter__bar" aria-hidden="true"></div>
+    <div class="virus-body">
+      <div class="virus-skull">☠</div>
+      <div class="virus-text-wrap" data-text="INFECTED!">INFECTED!</div>
+      <div class="virus-bar-bg">
+        <div class="virus-bar-fill"></div>
+      </div>
+      <button class="virus-btn">REMOVE</button>
     </div>
-
-    <!-- LVL -->
-    <div id="lvl-box" class="status-box" aria-hidden="true"></div>
-    <div id="lvl-label" class="status-label">LVL</div>
-    <output id="lvl-value" class="status-value" aria-label="Level value">0</output>
-
-    <!-- CPS -->
-    <div id="cps-box" class="status-box" aria-hidden="true"></div>
-    <div id="cps-label" class="status-label">cps</div>
-    <output id="cps-value" class="status-value" aria-label="Clicks per second">0</output>
-
-    <!-- Score Bar -->
-    <div class="score-bar">
-      <img class="score-bar__bg" src="elements/empty bar.svg" alt="" draggable="false">
-      <div class="score-bar__fill" id="barFill">
-        <img src="elements/full bar.svg" alt="" draggable="false">
-      </div>
-    </div>
-
-    <!-- Windows 95 Error Dialog (appears randomly during gameplay) -->
-    <div id="warning-notice">
-      <div class="w95-titlebar">
-        <span class="w95-title-text">System Error</span>
-        <button class="w95-close" id="warning-close" aria-label="Close">✕</button>
-      </div>
-      <div class="w95-body">
-        <div class="w95-message">
-          <span class="w95-x-icon">✕</span>
-          <span class="w95-error-text">ERROR</span>
-        </div>
-        <div class="w95-timer-bar-bg">
-          <div id="warning-timer-bar"></div>
-        </div>
-        <div class="w95-buttons">
-          <button class="w95-ok" id="warning-ok">OK</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 90s Pop-up Ad -->
-    <div id="ad-popup">
-      <img id="ad-img" src="" alt="Ad" draggable="false">
-      <span class="ad-label">ADD!!!</span>
-    </div>
-
-    <!-- Virus popup -->
-    <div id="virus-popup">
-      <div class="virus-titlebar">
-        <span class="virus-title-text">⚠ VIRUS.EXE</span>
-        <span class="virus-x">✕</span>
-      </div>
-      <div class="virus-body">
-        <div class="virus-skull">☠</div>
-        <div class="virus-text-wrap" data-text="INFECTED!">INFECTED!</div>
-        <div class="virus-bar-bg">
-          <div id="virus-timer-bar"></div>
-        </div>
-        <button class="virus-btn">REMOVE</button>
-      </div>
-    </div>
-
-    <!-- Spree pop label -->
-    <div id="spree-label"></div>
-
-    <!-- Persistent spree badge below score bar -->
-    <div id="spree-badge"></div>
-
-    <!-- Mouse -->
-    <img id="mouse" src="elements/mouce 1 resized.png" alt="Mouse" draggable="false">
-
-    <!-- Store screen -->
-    <div id="store-screen">
-      <img id="store-bg" src="elements/background.png" alt="" draggable="false">
-
-      <div id="store-title-wrap">
-        <div id="store-title-bar-l"></div>
-        <p id="store-title-text">store</p>
-        <div id="store-title-bar-r"></div>
-      </div>
-
-      <button class="store-tab active-tab" id="store-tab-mice">MICE</button>
-      <button class="store-tab" id="store-tab-monitors">MONITORS</button>
-      <button class="store-tab" id="store-tab-backgrounds">BACKGROUNDS</button>
-
-      <div id="store-content">
-        <img id="store-content-img" src="elements/Store.png" alt="" draggable="false">
-      </div>
-    </div>
-
-    <!-- Tutorial prompt (first launch) -->
-    <div id="tutorial-prompt-overlay">
-      <div class="tut-prompt-box">
-        <p class="tut-prompt-title">HOW TO PLAY?</p>
-        <p class="tut-prompt-q">PLAY THE<br>TUTORIAL?</p>
-        <div class="tut-prompt-btns">
-          <button class="tut-btn" id="tut-yes">YES</button>
-          <button class="tut-btn" id="tut-no">NO</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tutorial step overlay -->
-    <div id="tutorial-overlay">
-      <div id="tutorial-spotlight"></div>
-      <div id="tutorial-instruction">
-        <button class="tut-nav-btn" id="tut-prev-btn">◄</button>
-        <div id="tut-text"></div>
-        <button class="tut-nav-btn" id="tut-next-btn">►</button>
-      </div>
-    </div>
-
-    <!-- ── Game Over Overlay ──────────────────────────────── -->
-    <div id="game-over-overlay" role="dialog" aria-label="Game Over">
-      <div id="game-over-card">
-
-        <img id="game-over-img" src="elements/Game over.png" alt="Game Over" draggable="false">
-
-        <!-- Final stats overlaid on the image -->
-        <div id="go-lvl-stat" class="go-stat">LVL <span id="go-lvl">0</span></div>
-        <div id="go-cps-stat" class="go-stat">CPS <span id="go-cps">0</span></div>
-
-        <!-- Transparent hit area over the RESTART button in the image -->
-        <button id="restart-btn" aria-label="Restart game"></button>
-
-      </div>
-    </div>
-
   </div>
-
-  <script>
-    const clickCountEl    = document.getElementById('clickCount');
-    const barFill         = document.getElementById('barFill');
-    const mouseImg        = document.getElementById('mouse');
-    const gameScreen      = document.getElementById('game-screen');
-    const cpsValueEl      = document.getElementById('cps-value');
-    const lvlValueEl      = document.getElementById('lvl-value');
-    const gameOverOverlay = document.getElementById('game-over-overlay');
-    const goLvlEl         = document.getElementById('go-lvl');
-    const goCpsEl         = document.getElementById('go-cps');
-    const restartBtn      = document.getElementById('restart-btn');
-    const bgTint          = document.getElementById('bg-tint');
-    const lvlFlash        = document.getElementById('level-up-flash');
-    const warningNotice   = document.getElementById('warning-notice');
-    const warningClose    = document.getElementById('warning-close');
-    const warningOk       = document.getElementById('warning-ok');
-    const warningTimerBar = document.getElementById('warning-timer-bar');
-    const adPopup         = document.getElementById('ad-popup');
-    const adImg           = document.getElementById('ad-img');
-    const spreeLabel      = document.getElementById('spree-label');
-    const sreeBadge       = document.getElementById('spree-badge');
-    const virusPopup      = document.getElementById('virus-popup');
-    const virusTimerBar   = document.getElementById('virus-timer-bar');
-
-    const AD_IMAGES = [
-      'elements/adds/add 1 crop.png',
-      'elements/adds/add 2 crop.png',
-      'elements/adds/add 3 crop.png',
-      'elements/adds/add 4 crop.png',
-    ];
-
-    /* ── Tuning ─────────────────────────────────────────────── */
-    const FILL_PER_CLICK   = 0.04;
-    const DECAY_BASE       = 0.10;  // drain/sec at level 0
-    const DECAY_PER_LEVEL  = 0.015; // extra drain added each level
-    /* ────────────────────────────────────────────────────────── */
-
-    /* Background tint colour for each level (cycles if > array length) */
-    const LEVEL_COLORS = [
-      'transparent',
-      'rgba(220, 0,   0,   0.45)',  // shiny red
-      'rgba(0,   220, 0,   0.40)',  // bright green
-      'rgba(255, 220, 0,   0.45)',  // bright yellow
-      'rgba(0,   80,  255, 0.45)',  // bright blue
-      'rgba(255, 60,  0,   0.50)',  // fiery orange-red
-      'rgba(0,   240, 180, 0.40)',  // electric teal
-      'rgba(200, 0,   255, 0.45)',  // vivid purple
-    ];
-
-    let clicks      = 0;
-    let lvl         = 0;
-    let fillLevel   = 0.0;
-    let gameStarted = false;
-    let isGameOver  = false;
-
-    const clickTimes = [];
-
-    function getCPS() {
-      const now = performance.now();
-      while (clickTimes.length && now - clickTimes[0] > 1000) clickTimes.shift();
-      return clickTimes.length;
-    }
-
-    function updateBar() {
-      barFill.style.setProperty('--clip-right', ((1 - fillLevel) * 100).toFixed(2) + '%');
-    }
-
-    /* ── Warning Dialog ─────────────────────────────────────── */
-    const WARNING_DURATION = 7000; // ms the bar takes to drain
-    let warningOpen      = false;
-    let warningStartTime = null;
-    let warningTimeoutId = null;
-
-    function scheduleNextWarning() {
-      clearTimeout(warningTimeoutId);
-      const delay = 12000 + Math.random() * 8000; // 12–20 s
-      warningTimeoutId = setTimeout(() => {
-        if (!isGameOver && gameStarted) showWarning();
-      }, delay);
-    }
-
-    function showWarning() {
-      if (warningOpen || isGameOver) return;
-      warningOpen      = true;
-      warningStartTime = performance.now();
-      warningTimerBar.style.width = '100%';
-      warningNotice.classList.add('active');
-    }
-
-    function closeWarning() {
-      if (!warningOpen) return;
-      warningOpen      = false;
-      warningStartTime = null;
-      warningNotice.classList.remove('active');
-    }
-
-    /* Clicking anywhere on dialog: dismiss + reward +0.1 fill + schedule next */
-    warningNotice.addEventListener('pointerdown', (e) => {
-      e.stopPropagation();
-      if (!warningOpen) return;
-      closeWarning();
-      fillLevel = Math.min(1, fillLevel + 0.1);
-      updateBar();
-      scheduleNextWarning();
-    });
-
-    /* ── 90s Pop-up Ad ─────────────────────────────────────── */
-    let adOpen        = false;
-    let adTimeoutId   = null;
-
-    function scheduleNextAd() {
-      clearTimeout(adTimeoutId);
-      const delay = 8000 + Math.random() * 10000; // 8–18 s
-      adTimeoutId = setTimeout(() => {
-        if (!isGameOver && gameStarted) showAd();
-      }, delay);
-    }
-
-    function showAd() {
-      if (adOpen || isGameOver) return;
-      adImg.src = AD_IMAGES[Math.floor(Math.random() * AD_IMAGES.length)];
-      const x = 10  + Math.random() * (402 - 162 - 20);
-      const y = 130 + Math.random() * (430 - 130);
-      adPopup.style.left = x.toFixed(0) + 'px';
-      adPopup.style.top  = y.toFixed(0) + 'px';
-      adOpen = true;
-      adPopup.classList.add('active');
-    }
-
-    function closeAd() {
-      adOpen = false;
-      adPopup.classList.remove('active');
-    }
-
-    /* ── Click Multiplier / Spree ───────────────────────────── */
-    let clickMultiplier = 1;
-    let spreeTimeoutId  = null;
-    const SPREE_DURATION = 8000; // ms
-
-    function activateSpree() {
-      clickMultiplier *= 2;
-      clearTimeout(spreeTimeoutId);
-      spreeTimeoutId = setTimeout(() => {
-        clickMultiplier = 1;
-        sreeBadge.textContent = '';
-        sreeBadge.classList.remove('active');
-      }, SPREE_DURATION);
-
-      const label = 'x' + clickMultiplier + ' SPREE!';
-
-      spreeLabel.textContent = label;
-      spreeLabel.classList.remove('pop');
-      void spreeLabel.offsetWidth;
-      spreeLabel.classList.add('pop');
-
-      sreeBadge.textContent = label;
-      sreeBadge.classList.add('active');
-    }
-
-    adPopup.addEventListener('pointerdown', (e) => {
-      e.stopPropagation();
-      if (!adOpen) return;
-      closeAd();
-      activateSpree();
-      scheduleNextAd();
-    });
-
-    /* ── Virus popup ────────────────────────────────────────── */
-    const VIRUS_DURATION   = 5000;  // ms before it disappears on its own
-    const VIRUS_PENALTY    = 0.3;   // fill subtracted if clicked
-    let virusOpen          = false;
-    let virusStartTime     = null;
-    let virusTimeoutId     = null;
-
-    function scheduleNextVirus() {
-      clearTimeout(virusTimeoutId);
-      const delay = 25000 + Math.random() * 20000; // 25–45 s
-      virusTimeoutId = setTimeout(() => {
-        if (!isGameOver && gameStarted) showVirus();
-      }, delay);
-    }
-
-    function showVirus() {
-      if (virusOpen || isGameOver) return;
-      const x = 10 + Math.random() * (402 - 162 - 20);
-      const y = 130 + Math.random() * (430 - 130);
-      virusPopup.style.left = x.toFixed(0) + 'px';
-      virusPopup.style.top  = y.toFixed(0) + 'px';
-      virusTimerBar.style.width = '100%';
-      virusStartTime = performance.now();
-      virusOpen = true;
-      virusPopup.classList.add('active');
-    }
-
-    function closeVirus() {
-      virusOpen      = false;
-      virusStartTime = null;
-      virusPopup.classList.remove('active');
-    }
-
-    /* Clicking virus = penalty */
-    virusPopup.addEventListener('pointerdown', (e) => {
-      e.stopPropagation();
-      if (!virusOpen) return;
-      closeVirus();
-      fillLevel = Math.max(0, fillLevel - VIRUS_PENALTY);
-      updateBar();
-      scheduleNextVirus();
-    });
-
-    /* ── Level Up ───────────────────────────────────────────── */
-    function triggerLevelUp() {
-      lvl++;
-      fillLevel = 0.05;
-      lvlValueEl.textContent = lvl;
-
-      bgTint.style.background = LEVEL_COLORS[lvl % LEVEL_COLORS.length];
-
-      lvlFlash.classList.remove('flash');
-      void lvlFlash.offsetWidth;
-      lvlFlash.classList.add('flash');
-    }
-
-    /* ── Game Over ──────────────────────────────────────────── */
-    function triggerGameOver() {
-      isGameOver = true;
-      mouseImg.classList.remove('pressed');
-      goLvlEl.textContent = lvl;
-      goCpsEl.textContent = getCPS();
-      gameOverOverlay.classList.add('active');
-    }
-
-    /* ── Restart ────────────────────────────────────────────── */
-    function restartGame() {
-      clicks      = 0;
-      lvl         = 0;
-      fillLevel   = 0.0;
-      gameStarted = false;
-      isGameOver  = false;
-      clickTimes.length = 0;
-      clearTimeout(warningTimeoutId);
-      warningTimeoutId = null;
-      clearTimeout(adTimeoutId);
-      adTimeoutId = null;
-      clearTimeout(virusTimeoutId);
-      virusTimeoutId = null;
-      closeVirus();
-      clearTimeout(spreeTimeoutId);
-      spreeTimeoutId = null;
-      clickMultiplier = 1;
-      sreeBadge.textContent = '';
-      sreeBadge.classList.remove('active');
-      closeAd();
-
-      clickCountEl.textContent = '0';
-      lvlValueEl.textContent   = '0';
-      cpsValueEl.textContent   = '0';
-      bgTint.style.background  = 'transparent';
-      closeWarning();
-      updateBar();
-
-      gameOverOverlay.classList.remove('active');
-    }
-
-    restartBtn.addEventListener('pointerdown', (e) => {
-      e.stopPropagation();
-      restartGame();
-    });
-
-    /* ── Game loop ──────────────────────────────────────────── */
-    let lastTimestamp = null;
-    function tick(timestamp) {
-      if (lastTimestamp !== null && !isGameOver && !isInStore) {
-        const dt      = (timestamp - lastTimestamp) / 1000;
-        const decay   = DECAY_BASE + lvl * DECAY_PER_LEVEL;
-
-        fillLevel = Math.max(0, fillLevel - decay * dt);
-        updateBar();
-        cpsValueEl.textContent = getCPS();
-
-        if (fillLevel >= 0.99) {
-          triggerLevelUp();                        // resets bar, can't also game-over
-        } else if (fillLevel <= 0 && gameStarted) {
-          triggerGameOver();
-        }
-
-        // Virus timer bar — drains over VIRUS_DURATION then disappears harmlessly
-        if (virusOpen && virusStartTime !== null) {
-          const elapsed   = timestamp - virusStartTime;
-          const remaining = Math.max(0, 1 - elapsed / VIRUS_DURATION);
-          virusTimerBar.style.width = (remaining * 100).toFixed(2) + '%';
-          if (remaining <= 0) {
-            closeVirus();
-            scheduleNextVirus();
-          }
-        }
-
-        // Warning timer bar — smooth depletion in the RAF loop
-        if (warningOpen && warningStartTime !== null) {
-          const elapsed   = timestamp - warningStartTime;
-          const remaining = Math.max(0, 1 - elapsed / WARNING_DURATION);
-          warningTimerBar.style.width = (remaining * 100).toFixed(2) + '%';
-          if (remaining <= 0) {
-            closeWarning();
-            triggerGameOver();
-          }
-        }
-      }
-      lastTimestamp = timestamp;
-      requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-
-    /* ── +1 float ───────────────────────────────────────────── */
-    function spawnPlusOne() {
-      const el = document.createElement('div');
-      el.className = 'plus-one';
-      el.textContent = '+1';
-      el.style.left = (122 + 159 / 2 - 18 + (Math.random() - 0.5) * 30) + 'px';
-      el.style.top  = (564 + 60) + 'px';
-      gameScreen.appendChild(el);
-      el.addEventListener('animationend', () => el.remove());
-    }
-
-    /* ── Mouse press ────────────────────────────────────────── */
-    mouseImg.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
-      if (isGameOver || currentTutStep >= 0) return;
-
-      mouseImg.classList.add('pressed');
-      if (!gameStarted) {
-        gameStarted = true;
-        scheduleNextWarning();
-        scheduleNextAd();
-        scheduleNextVirus();
-      }
-
-      clicks += clickMultiplier;
-      clickCountEl.textContent = clicks;
-      for (let i = 0; i < clickMultiplier; i++) clickTimes.push(performance.now());
-
-      fillLevel = Math.min(1, fillLevel + FILL_PER_CLICK * clickMultiplier);
-      updateBar();
-      spawnPlusOne();
-    });
-
-    gameScreen.addEventListener('pointerup',     () => mouseImg.classList.remove('pressed'));
-    gameScreen.addEventListener('pointercancel', () => mouseImg.classList.remove('pressed'));
-
-    /* ── Tutorial ───────────────────────────────────────────── */
-    let currentTutStep = -1;
-
-    const tutPromptOverlay = document.getElementById('tutorial-prompt-overlay');
-    const tutOverlay       = document.getElementById('tutorial-overlay');
-    const tutSpotlight     = document.getElementById('tutorial-spotlight');
-    const tutInstruction   = document.getElementById('tutorial-instruction');
-    const tutText          = document.getElementById('tut-text');
-    const tutPrevBtn       = document.getElementById('tut-prev-btn');
-    const tutNextBtn       = document.getElementById('tut-next-btn');
-    const tutYes           = document.getElementById('tut-yes');
-    const tutNo            = document.getElementById('tut-no');
-    const scoreBarEl       = document.querySelector('.score-bar');
-
-    const TUT_STEPS = [
-      {
-        text: 'CLICK THE MOUSE<br>RAPIDLY TO FILL<br>THE YELLOW BAR!',
-        spot: { l: 114, t: 556, w: 171, h: 241 },
-        textTop: 428,
-        prepare() { mouseImg.style.zIndex = '502'; },
-        cleanup()  { mouseImg.style.zIndex = ''; },
-      },
-      {
-        text: 'KEEP THE BAR FILLED!<br>IF IT EMPTIES —<br>GAME OVER!',
-        spot: { l: 35, t: 82, w: 332, h: 40 },
-        textTop: 148,
-        prepare() { scoreBarEl.style.zIndex = '502'; },
-        cleanup()  { scoreBarEl.style.zIndex = ''; },
-      },
-      {
-        text: 'FILL THE BAR<br>COMPLETELY TO<br>LEVEL UP!<br>EACH LEVEL IS HARDER!',
-        spot: { l: 29, t: 53, w: 116, h: 45 },
-        textTop: 148,
-        prepare() {
-          document.getElementById('lvl-box').style.zIndex   = '502';
-          document.getElementById('lvl-label').style.zIndex = '502';
-          document.getElementById('lvl-value').style.zIndex = '502';
-        },
-        cleanup() {
-          document.getElementById('lvl-box').style.zIndex   = '';
-          document.getElementById('lvl-label').style.zIndex = '';
-          document.getElementById('lvl-value').style.zIndex = '';
-        },
-      },
-      {
-        text: 'CLICK THE ERROR<br>BEFORE TIMER RUNS OUT!<br>REWARD: +BAR FILL<br>MISS IT = GAME OVER!',
-        spot: { l: 113, t: 260, w: 178, h: 132 },
-        textTop: 414,
-        prepare() {
-          warningTimerBar.style.width       = '65%';
-          warningNotice.style.zIndex        = '502';
-          warningNotice.style.pointerEvents = 'none';
-          warningNotice.classList.add('active');
-        },
-        cleanup() {
-          warningNotice.style.zIndex        = '';
-          warningNotice.style.pointerEvents = '';
-          warningNotice.classList.remove('active');
-        },
-      },
-      {
-        text: 'CLICK ADS FOR A<br>CLICKING SPREE!<br>1 CLICK = 2 CLICKS!<br>STACK IT FOR X4!',
-        spot: { l: 107, t: 210, w: 188, h: 210 },
-        textTop: 442,
-        prepare() {
-          adImg.src                   = AD_IMAGES[0];
-          adPopup.style.left          = '115px';
-          adPopup.style.top           = '218px';
-          adPopup.style.zIndex        = '502';
-          adPopup.style.pointerEvents = 'none';
-          adPopup.classList.add('active');
-        },
-        cleanup() {
-          adPopup.style.zIndex        = '';
-          adPopup.style.pointerEvents = '';
-          adPopup.classList.remove('active');
-        },
-      },
-      {
-        text: 'AVOID THE VIRUS!<br>CLICKING IT DRAINS<br>YOUR BAR BY 30%!<br>LET IT DISAPPEAR!',
-        spot: { l: 111, t: 259, w: 180, h: 162 },
-        textTop: 444,
-        prepare() {
-          virusTimerBar.style.width       = '55%';
-          virusPopup.classList.add('tut-demo-show');
-          virusPopup.style.left           = '119px';
-          virusPopup.style.top            = '267px';
-          virusPopup.style.zIndex         = '502';
-          virusPopup.style.pointerEvents  = 'none';
-          virusPopup.classList.add('active');
-        },
-        cleanup() {
-          virusPopup.classList.remove('tut-demo-show');
-          virusPopup.style.zIndex         = '';
-          virusPopup.style.pointerEvents  = '';
-          virusPopup.classList.remove('active');
-        },
-      },
-    ];
-
-    function applyTutStep(i) {
-      const s = TUT_STEPS[i];
-      tutSpotlight.style.left   = s.spot.l + 'px';
-      tutSpotlight.style.top    = s.spot.t + 'px';
-      tutSpotlight.style.width  = s.spot.w + 'px';
-      tutSpotlight.style.height = s.spot.h + 'px';
-      tutText.innerHTML         = s.text;
-      tutInstruction.style.top  = s.textTop + 'px';
-      tutPrevBtn.disabled       = (i === 0);
-      tutNextBtn.textContent    = (i === TUT_STEPS.length - 1) ? 'END' : '►';
-      s.prepare();
-    }
-
-    function startTutorial() {
-      tutOverlay.classList.add('active');
-      currentTutStep = 0;
-      applyTutStep(0);
-    }
-
-    function endTutorial() {
-      tutOverlay.classList.remove('active');
-      localStorage.setItem('cvlaud-tutorial-done', '1');
-      currentTutStep = -1;
-    }
-
-    tutNextBtn.addEventListener('pointerdown', (e) => {
-      e.stopPropagation();
-      TUT_STEPS[currentTutStep].cleanup();
-      currentTutStep++;
-      if (currentTutStep >= TUT_STEPS.length) {
-        endTutorial();
-      } else {
-        applyTutStep(currentTutStep);
-      }
-    });
-
-    tutPrevBtn.addEventListener('pointerdown', (e) => {
-      e.stopPropagation();
-      if (tutPrevBtn.disabled) return;
-      TUT_STEPS[currentTutStep].cleanup();
-      currentTutStep--;
-      applyTutStep(currentTutStep);
-    });
-
-    tutYes.addEventListener('pointerdown', (e) => {
-      e.stopPropagation();
-      tutPromptOverlay.classList.remove('active');
-      startTutorial();
-    });
-
-    tutNo.addEventListener('pointerdown', (e) => {
-      e.stopPropagation();
-      tutPromptOverlay.classList.remove('active');
-      localStorage.setItem('cvlaud-tutorial-done', '1');
-    });
-
-    tutPromptOverlay.classList.add('active');
-
-    /* ── Store ──────────────────────────────────────────────── */
-    const storeScreen = document.getElementById('store-screen');
-    let isInStore = false;
-
-    function openStore() {
-      isInStore = true;
-      storeScreen.classList.add('active');
-    }
-
-    function closeStore() {
-      isInStore = false;
-      storeScreen.classList.remove('active');
-    }
-
-    document.querySelectorAll('.store-tab').forEach(btn => {
-      btn.addEventListener('pointerdown', (e) => {
-        e.stopPropagation();
-        document.querySelectorAll('.store-tab').forEach(t => t.classList.remove('active-tab'));
-        btn.classList.add('active-tab');
-      });
-    });
-
-    /* ── Menu ───────────────────────────────────────────────── */
-    const menuPanel      = document.getElementById('menu-panel');
-    const menuStoreLabel = document.getElementById('menu-store-label');
-    const menuHelpLabel  = document.getElementById('menu-help-label');
-
-    function closeMenu() { menuPanel.classList.remove('open'); }
-
-    menuPanel.addEventListener('pointerdown', (e) => {
-      e.stopPropagation();
-      if (currentTutStep >= 0) return;
-      if (menuStoreLabel.contains(e.target)) {
-        closeMenu();
-        if (isInStore) closeStore();
-        else openStore();
-        return;
-      }
-      if (menuHelpLabel.contains(e.target)) {
-        closeMenu();
-        tutPromptOverlay.classList.add('active');
-        return;
-      }
-      menuPanel.classList.toggle('open');
-    });
-
-    gameScreen.addEventListener('pointerdown', () => { closeMenu(); });
-
-    /* ── Mobile scaling (touch devices only) ────────────────── */
-    function scaleGame() {
-      if (!window.matchMedia('(pointer: coarse)').matches) {
-        gameScreen.style.transform = '';
-        return;
-      }
-      gameScreen.style.transform = `scale(${window.innerWidth / 402})`;
-    }
-    window.addEventListener('resize', scaleGame);
-    scaleGame();
-  </script>
 
 </body>
 </html>
