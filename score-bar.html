@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>CVLAUD GAME</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    /* ─── Score Bar Component ─────────────────────────────── */
+
+    .score-bar {
+      position: relative;
+      width: 80vw;
+      max-width: 660px;
+    }
+
+    /* The empty bar frame — always fully visible */
+    .score-bar__bg {
+      width: 100%;
+      display: block;
+    }
+
+    /* The yellow fill layer — positioned to sit inside the track */
+    .score-bar__fill {
+      position: absolute;
+      left:   2.52%;   /* 8.25  / 327.9 */
+      top:    28.4%;   /* 8.54  / 30.05  (centered vertically in track) */
+      width:  94.97%;  /* 311.4 / 327.9 */
+      height: 43.2%;   /* 12.97 / 30.05 */
+
+      /* Clip from the RIGHT side — JS drives --clip-right from 100% → 0% */
+      clip-path: inset(0 var(--clip-right, 100%) 0 0);
+      transition: clip-path 60ms linear;
+    }
+
+    .score-bar__fill img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* ─── Debug / demo area (remove when integrating) ─────── */
+    .debug {
+      margin-top: 24px;
+      color: #888;
+      font-size: 13px;
+      text-align: center;
+    }
+    .debug span {
+      color: #fdd94b;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Score Bar -->
+  <div class="score-bar" id="scoreBar">
+    <img class="score-bar__bg" src="elements/empty bar.svg" alt="score bar background" draggable="false">
+    <div class="score-bar__fill" id="barFill">
+      <img src="elements/full bar.svg" alt="" draggable="false">
+    </div>
+  </div>
+
+  <!-- Debug readout (remove when integrating into full game) -->
+  <div class="debug">
+    Fill: <span id="debugPct">0%</span> &nbsp;|&nbsp; Click anywhere to fill — stops clicking = drains
+  </div>
+
+  <script>
+    const barFill   = document.getElementById('barFill');
+    const debugPct  = document.getElementById('debugPct');
+
+    /* ── Tuning constants ───────────────────────────────────── */
+    const FILL_PER_CLICK = 0.04;   // how much each click/tap adds  (0–1)
+    const DECAY_PER_SEC  = 0.10;   // how fast the bar drains       (0–1 per second)
+    /* ────────────────────────────────────────────────────────── */
+
+    let fillLevel = 0.0;  // 0.0 = empty, 1.0 = full
+
+    /* Update the visual bar and debug readout */
+    function updateBar() {
+      const clipRight = (1 - fillLevel) * 100;
+      barFill.style.setProperty('--clip-right', clipRight.toFixed(2) + '%');
+      debugPct.textContent = Math.round(fillLevel * 100) + '%';
+    }
+
+    /* Decay loop — runs every frame */
+    let lastTimestamp = null;
+    function tick(timestamp) {
+      if (lastTimestamp !== null) {
+        const dt = (timestamp - lastTimestamp) / 1000;   // seconds since last frame
+        fillLevel = Math.max(0, fillLevel - DECAY_PER_SEC * dt);
+        updateBar();
+      }
+      lastTimestamp = timestamp;
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    /* Add fill on click / tap */
+    function handleInput(e) {
+      e.preventDefault();
+      fillLevel = Math.min(1, fillLevel + FILL_PER_CLICK);
+      updateBar();
+    }
+
+    document.addEventListener('pointerdown', handleInput);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <title>CVLAUD GAME</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    /* iPhone 17 frame: 393 × 852px */
+    #game-screen {
+      position: relative;
+      width: 393px;
+      height: 852px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    #game-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ─── Clicks Counter ──────────────────────────────────────
+       x: 139px, y: 36px  (design reference)
+    ─────────────────────────────────────────────────────────── */
+    .clicks-counter {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 36px;
+      width: 125px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .clicks-counter__bar {
+      width: 16px;
+      height: 6px;
+      border: 1.5px solid #fdd94b;
+      background: #060606;
+      flex-shrink: 0;
+    }
+
+    .clicks-counter__number {
+      width: 30px;
+      height: 35px;
+      font-family: 'Press Start 2P', Helvetica, monospace;
+      font-size: 32px;
+      font-weight: normal;
+      line-height: normal;
+      letter-spacing: 0;
+      color: black;
+      -webkit-text-stroke: 2px #fdd94b;
+      text-align: center;
+      white-space: nowrap;
+      margin-top: -3px;
+    }
+
+    /* ─── Score Bar ───────────────────────────────────────────
+       x: 43px, y: 90px  (design reference)
+    ─────────────────────────────────────────────────────────── */
+    .score-bar {
+      position: absolute;
+      left: 43px;
+      top: 90px;
+      width: 307px; /* 393 - 43 left - 43 right */
+    }
+
+    .score-bar__bg {
+      width: 100%;
+      display: block;
+    }
+
+    .score-bar__fill {
+      position: absolute;
+      left:   2.52%;  /* 8.25  / 327.9 */
+      top:    28.4%;  /* 8.54  / 30.05 */
+      width:  94.97%; /* 311.4 / 327.9 */
+      height: 43.2%;  /* 12.97 / 30.05 */
+      clip-path: inset(0 var(--clip-right, 100%) 0 0);
+      transition: clip-path 60ms linear;
+    }
+
+    .score-bar__fill img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-screen">
+
+    <img id="game-bg" src="elements/background.png" alt="" draggable="false">
+
+    <!-- Clicks Counter: x=139, y=36 -->
+    <div class="clicks-counter" role="status" aria-label="Clicks counter" aria-live="polite">
+      <div class="clicks-counter__bar" aria-hidden="true"></div>
+      <div class="clicks-counter__number" id="clickCount" aria-atomic="true">0</div>
+      <div class="clicks-counter__bar" aria-hidden="true"></div>
+    </div>
+
+    <!-- Score Bar: x=43, y=90 -->
+    <div class="score-bar">
+      <img class="score-bar__bg" src="elements/empty bar.svg" alt="" draggable="false">
+      <div class="score-bar__fill" id="barFill">
+        <img src="elements/full bar.svg" alt="" draggable="false">
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const clickCount = document.getElementById('clickCount');
+    const barFill    = document.getElementById('barFill');
+
+    /* ── Tuning ─────────────────────────────────────────────── */
+    const FILL_PER_CLICK = 0.04;
+    const DECAY_PER_SEC  = 0.10;
+    /* ────────────────────────────────────────────────────────── */
+
+    let clicks    = 0;
+    let fillLevel = 0.0;
+
+    function updateBar() {
+      barFill.style.setProperty('--clip-right', ((1 - fillLevel) * 100).toFixed(2) + '%');
+    }
+
+    /* Single decay loop for the fill bar */
+    let lastTimestamp = null;
+    function tick(timestamp) {
+      if (lastTimestamp !== null) {
+        const dt = (timestamp - lastTimestamp) / 1000;
+        fillLevel = Math.max(0, fillLevel - DECAY_PER_SEC * dt);
+        updateBar();
+      }
+      lastTimestamp = timestamp;
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    /* Single handler — increments counter + fills bar */
+    document.getElementById('game-screen').addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      clicks++;
+      clickCount.textContent = clicks;
+      fillLevel = Math.min(1, fillLevel + FILL_PER_CLICK);
+      updateBar();
+    });
+  </script>
+
+</body>
+</html>

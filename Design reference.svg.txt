@@ -1,0 +1,100 @@
+import background1 from "./background-1.png";
+import mouce1Resized1 from "./mouce-1-resized-1.png";
+import scoreBarGrup from "./score-bar-grup.png";
+import screen1 from "./screen-1.png";
+
+const statusBoxes = [
+  {
+    id: "level",
+    label: "LVL",
+    value: "0",
+    boxClassName: "absolute top-[61px] left-[37px] w-[63px] h-[21px] bg-black",
+    labelClassName:
+      "absolute top-[68px] left-[42px] w-9 [font-family:'Press_Start_2P-Regular',Helvetica] font-normal text-[#fdd94b] text-[8px] tracking-[0] leading-[normal] whitespace-nowrap",
+    valueClassName:
+      "absolute top-[68px] left-[74px] w-9 [font-family:'Press_Start_2P-Regular',Helvetica] font-normal text-[#fdd94b] text-[8px] tracking-[0] leading-[normal] whitespace-nowrap",
+  },
+  {
+    id: "cps",
+    label: "cps",
+    value: "0",
+    boxClassName: "absolute top-[61px] left-[302px] w-[63px] h-[21px] bg-black",
+    labelClassName:
+      "absolute top-[68px] left-[307px] w-9 [font-family:'Press_Start_2P-Regular',Helvetica] font-normal text-[#fdd94b] text-[8px] tracking-[0] leading-[normal] whitespace-nowrap",
+    valueClassName:
+      "absolute top-[70px] left-[339px] w-9 [font-family:'Press_Start_2P-Regular',Helvetica] font-normal text-[#fdd94b] text-[8px] tracking-[0] leading-[normal] whitespace-nowrap",
+  },
+];
+
+export const Iphone = (): JSX.Element => {
+  return (
+    <main className="bg-white w-full min-w-[402px] min-h-[874px] relative overflow-hidden">
+      <h1 className="sr-only">Retro clicker game interface</h1>
+      <img
+        className="absolute top-[calc(50.00%_-_437px)] left-[calc(50.00%_-_201px)] w-[402px] h-[874px] aspect-[0.5] object-cover pointer-events-none select-none"
+        alt="Retro red patterned background"
+        src={background1}
+        draggable={false}
+      />
+      <section
+        className="absolute inset-0"
+        aria-label="Game screen and score interface"
+      >
+        <div className="absolute h-[30px] top-[84px] left-[37px] flex px-[5.8px] py-[8.4px] items-end min-w-[328px] bg-[url(/group.png)] bg-[100%_100%]">
+          <img
+            className="w-[316px] h-[13px] pointer-events-none select-none"
+            alt="Score bar"
+            src={scoreBarGrup}
+            draggable={false}
+          />
+        </div>
+        <div
+          className="flex w-[125px] items-center justify-between absolute top-9 left-[calc(50.00%_-_62px)]"
+          aria-label="Current score"
+        >
+          <div
+            className="relative w-4 h-1.5 bg-[#060606] border-[1.5px] border-solid border-[#fdd94b]"
+            aria-hidden="true"
+          />
+          <output
+            className="relative w-[30px] h-[35px] mt-[-3.00px] [-webkit-text-stroke:2px_#fdd94b] [font-family:'Press_Start_2P-Regular',Helvetica] font-normal text-black text-[32px] tracking-[0] leading-[normal] whitespace-nowrap"
+            aria-label="Score value"
+          >
+            0
+          </output>
+          <div
+            className="relative w-4 h-1.5 bg-[#060606] border-[1.5px] border-solid border-[#fdd94b]"
+            aria-hidden="true"
+          />
+        </div>
+        {statusBoxes.map((box) => (
+          <div key={box.id}>
+            <div className={box.boxClassName} aria-hidden="true" />
+            <div className={box.labelClassName}>{box.label}</div>
+            <output
+              className={box.valueClassName}
+              aria-label={`${box.label} value`}
+            >
+              {box.value}
+            </output>
+          </div>
+        ))}
+
+        <img
+          className="absolute top-[159px] left-[calc(50.00%_-_191px)] w-[383px] h-[336px] aspect-[1.14] object-cover pointer-events-none select-none"
+          alt="Retro computer screen"
+          src={screen1}
+          draggable={false}
+        />
+        <img
+          className="absolute top-[564px] left-[calc(50.00%_-_79px)] w-[159px] h-[229px] aspect-[0.7] object-cover pointer-events-none select-none"
+          alt="Computer mouse"
+          src={mouce1Resized1}
+          draggable={false}
+        />
+      </section>
+    </main>
+  );
+};
+
+export default Iphone;

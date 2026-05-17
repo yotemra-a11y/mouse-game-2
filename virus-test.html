@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <title>Virus Block Test</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #111;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    /* ─── Glitch text animation ─────────────────────────────── */
+    @keyframes glitch-1 {
+      0%, 89%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+      90%            { clip-path: inset(10% 0 60% 0); transform: translate(-3px, 0); }
+      92%            { clip-path: inset(55% 0 20% 0); transform: translate(3px, 0); }
+      94%            { clip-path: inset(80% 0 5%  0); transform: translate(-2px, 0); }
+      96%            { clip-path: inset(30% 0 40% 0); transform: translate(2px, 0); }
+    }
+
+    @keyframes glitch-2 {
+      0%, 91%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+      92%            { clip-path: inset(5%  0 70% 0); transform: translate(3px, 0); }
+      94%            { clip-path: inset(60% 0 15% 0); transform: translate(-3px, 0); }
+      96%            { clip-path: inset(40% 0 45% 0); transform: translate(2px, 0); }
+    }
+
+    @keyframes flicker {
+      0%, 97%, 100% { opacity: 1; }
+      98%            { opacity: 0.4; }
+      99%            { opacity: 1; }
+      99.5%          { opacity: 0.2; }
+    }
+
+    @keyframes scanline {
+      0%   { background-position: 0 0; }
+      100% { background-position: 0 100px; }
+    }
+
+    @keyframes skull-pulse {
+      0%, 100% { transform: scale(1);   color: #cc0000; }
+      50%       { transform: scale(1.1); color: #ff2200; }
+    }
+
+    @keyframes bar-fill {
+      0%   { width: 100%; }
+      100% { width: 0%; }
+    }
+
+    /* ─── Virus popup ───────────────────────────────────────── */
+    #virus-popup {
+      position: relative;
+      width: 162px;
+      background: #0a0a0a;
+      border: 2px solid #cc0000;
+      box-shadow: 0 0 8px #cc0000, 0 0 2px #cc0000 inset;
+      cursor: pointer;
+      animation: flicker 4s infinite;
+      overflow: hidden;
+    }
+
+    /* Scanline overlay */
+    #virus-popup::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0, 0, 0, 0.25) 3px,
+        rgba(0, 0, 0, 0.25) 4px
+      );
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ─── Title bar ─────────────────────────────────────────── */
+    .virus-titlebar {
+      background: #cc0000;
+      padding: 4px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .virus-title-text {
+      font-size: 6px;
+      color: #fff;
+      letter-spacing: 0.05em;
+    }
+
+    .virus-x {
+      font-family: Arial, sans-serif;
+      font-size: 10px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    /* ─── Body ──────────────────────────────────────────────── */
+    .virus-body {
+      padding: 10px 8px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Skull */
+    .virus-skull {
+      font-size: 28px;
+      line-height: 1;
+      animation: skull-pulse 0.8s ease-in-out infinite;
+    }
+
+    /* Glitch text block */
+    .virus-text-wrap {
+      position: relative;
+      font-size: 7px;
+      color: #00ff41;
+      text-align: center;
+      line-height: 1.8;
+      letter-spacing: 0.05em;
+    }
+
+    .virus-text-wrap::before,
+    .virus-text-wrap::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      text-align: center;
+    }
+
+    .virus-text-wrap::before {
+      color: #ff0044;
+      animation: glitch-1 3s infinite;
+    }
+
+    .virus-text-wrap::after {
+      color: #00eeff;
+      animation: glitch-2 3s infinite;
+    }
+
+    /* Infection bar */
+    .virus-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: #1a0000;
+      border: 1px solid #cc0000;
+    }
+
+    .virus-bar-fill {
+      height: 100%;
+      background: #cc0000;
+      box-shadow: 0 0 4px #ff0000;
+      width: 100%;
+    }
+
+    /* OK button */
+    .virus-btn {
+      background: #1a0000;
+      border: 1px solid #cc0000;
+      padding: 4px 14px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6px;
+      color: #cc0000;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="virus-popup">
+    <div class="virus-titlebar">
+      <span class="virus-title-text">⚠ VIRUS.EXE</span>
+      <span class="virus-x">✕</span>
+    </div>
+    <div class="virus-body">
+      <div class="virus-skull">☠</div>
+      <div class="virus-text-wrap" data-text="INFECTED!">INFECTED!</div>
+      <div class="virus-bar-bg">
+        <div class="virus-bar-fill"></div>
+      </div>
+      <button class="virus-btn">REMOVE</button>
+    </div>
+  </div>
+
+</body>
+</html>

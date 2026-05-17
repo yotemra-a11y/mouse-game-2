@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 327.9 30.05">
+  <defs>
+    <style>
+      .cls-1 {
+        opacity: .85;
+      }
+
+      .cls-2 {
+        stroke: #231f20;
+        stroke-width: 16.5px;
+      }
+
+      .cls-2, .cls-3 {
+        fill: none;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-3 {
+        stroke: #d9d3be;
+        stroke-width: 11px;
+      }
+
+      .cls-4 {
+        fill: #606161;
+      }
+
+      .cls-5 {
+        fill: #593b4e;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g>
+        <g class="cls-1">
+          <rect class="cls-5" x="8.25" y="8.25" width="311.4" height="13.55"/>
+          <rect class="cls-2" x="8.25" y="8.25" width="311.4" height="13.55"/>
+          <rect class="cls-3" x="8.25" y="8.25" width="311.4" height="13.55"/>
+          <path d="m319.65,8.25v13.55H8.25v-13.55h311.4m2.5-2.5H5.75v18.55h316.4V5.75h0Z"/>
+        </g>
+        <rect x="6.28" y="5.73" width="315.33" height="18.58"/>
+      </g>
+      <g>
+        <rect class="cls-4" x="84.56" y="8.54" width="1.81" height="12.97"/>
+        <rect class="cls-4" x="162.83" y="8.54" width="1.81" height="12.97"/>
+        <rect class="cls-4" x="241.11" y="8.54" width="1.81" height="12.97"/>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <title>Spree Text Test</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #111;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      padding: 40px 20px;
+    }
+
+    /* ─── Pop label (floats on ad click) ───────────────────── */
+    @keyframes spree-pop {
+      0%   { opacity: 1; transform: translateX(-50%) scale(1.4); }
+      80%  { opacity: 1; transform: translateX(-50%) scale(1); }
+      100% { opacity: 0; transform: translateX(-50%) scale(1); }
+    }
+
+    #spree-label {
+      position: relative;
+      left: 50%;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 38px;
+      color: #000;
+      -webkit-text-stroke: 3px #fff;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    #spree-label.pop {
+      animation: spree-pop 1.2s ease-out forwards;
+    }
+
+    /* ─── Persistent badge (sits below score bar) ───────────── */
+    @keyframes spree-badge-blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0.4; }
+    }
+
+    #spree-badge {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 14px;
+      color: #000;
+      -webkit-text-stroke: 2px #fff;
+      white-space: nowrap;
+      animation: spree-badge-blink 0.8s step-end infinite;
+    }
+
+    /* ─── Controls ──────────────────────────────────────────── */
+    .controls {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: #000;
+      background: #fdd94b;
+      border: none;
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+
+    label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <label>POP LABEL (fires on click)</label>
+  <div id="spree-label">x2 SPREE!</div>
+
+  <label>PERSISTENT BADGE (below score bar)</label>
+  <div id="spree-badge">x2 SPREE!</div>
+
+  <div class="controls">
+    <button onclick="fireSpree(2)">TRIGGER x2</button>
+    <button onclick="fireSpree(4)">TRIGGER x4</button>
+  </div>
+
+  <script>
+    const spreeLabel = document.getElementById('spree-label');
+    const sreeBadge  = document.getElementById('spree-badge');
+
+    function fireSpree(multiplier) {
+      const label = 'x' + multiplier + ' SPREE!';
+
+      spreeLabel.textContent = label;
+      spreeLabel.classList.remove('pop');
+      void spreeLabel.offsetWidth;
+      spreeLabel.classList.add('pop');
+
+      sreeBadge.textContent = label;
+    }
+  </script>
+
+</body>
+</html>
