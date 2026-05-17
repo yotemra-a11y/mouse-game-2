@@ -166,8 +166,8 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 62px;
-      height: 20px;
+      width: 90px;
+      height: 28px;
       background: transparent;
       z-index: 350;
       overflow: hidden;
@@ -175,16 +175,16 @@
     }
 
     #menu-panel.open {
-      height: 54px;
+      height: 78px;
       background: #000;
     }
 
     #menu-label {
       position: absolute;
-      left: 6px;
-      top: 4px;
+      left: 8px;
+      top: 6px;
       font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 8px;
+      font-size: 12px;
       font-weight: normal;
       color: #000;
       white-space: nowrap;
@@ -202,9 +202,9 @@
 
     #menu-sep {
       position: absolute;
-      left: 6px;
-      top: 14px;
-      width: 31px;
+      left: 8px;
+      top: 20px;
+      width: 46px;
       height: 2px;
       background: #000;
     }
@@ -217,26 +217,26 @@
       position: absolute;
       width: 0;
       height: 0;
-      border-top: 3px solid transparent;
-      border-bottom: 3px solid transparent;
-      border-left: 5px solid #ff5959;
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+      border-left: 6px solid #ff5959;
     }
 
-    #menu-arrow-store { left: 8px; top: 25px; }
-    #menu-arrow-help  { left: 8px; top: 40px; }
+    #menu-arrow-store { left: 10px; top: 36px; }
+    #menu-arrow-help  { left: 10px; top: 56px; }
 
     .menu-item-label {
       position: absolute;
       font-family: 'Press Start 2P', Helvetica, monospace;
-      font-size: 7px;
+      font-size: 10px;
       font-weight: normal;
       color: #fdd94b;
       white-space: nowrap;
       cursor: pointer;
     }
 
-    #menu-store-label { left: 16px; top: 22px; }
-    #menu-help-label  { left: 16px; top: 37px; }
+    #menu-store-label { left: 20px; top: 32px; }
+    #menu-help-label  { left: 20px; top: 52px; }
 
     /* ─── Windows 95 Error Dialog ─────────────────────────────
        Strictly contained within Screen.png bounds:
@@ -1611,10 +1611,7 @@
 
     /* ── Responsive scaling ─────────────────────────────────── */
     function scaleGame() {
-      const scale = Math.min(
-        window.innerWidth  / 402,
-        window.innerHeight / 874
-      );
+      const scale = window.innerWidth / 402;
       gameScreen.style.transform = `scale(${scale})`;
     }
     window.addEventListener('resize', scaleGame);
